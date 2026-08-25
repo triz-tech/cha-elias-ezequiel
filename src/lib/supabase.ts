@@ -25,6 +25,7 @@ export type RaffleSettings = {
   pix_city: string;
   pix_copy_paste?: string | null;
   intro: string;
+  display_prize: number;
 };
 
 export type Ticket = {

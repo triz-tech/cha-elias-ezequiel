@@ -9,12 +9,14 @@ const fallbackSettings: RaffleSettings = {
   price: 15,
   quantity: 50,
   prize_percent: 20,
+  display_prize: 150,
   draw_date: "2026-10-01",
   instagram_1: "@wandersonpz",
   instagram_2: "@duda_gentill",
   pix_key: "",
   pix_name: "ELIAS EZEQUIEL",
   pix_city: "RIO DE JANEIRO",
+  
   intro: "Uma rifa feita com carinho para ajudar na chegada dos nossos gêmeos.",
 };
 
@@ -192,7 +194,7 @@ return <AdminPage
 
         <section className="prize-highlight">
   <span className="eyebrow">Prêmio dos gêmeos</span>
-  <h2>{money(Number(settings.quantity) * Number(settings.price) * Number(settings.prize_percent) / 100)}</h2>
+  <h2>{money(Number(settings.display_prize))}</h2>
   <p>
     O valor do prêmio é calculado automaticamente conforme as configurações da rifa.
   </p>
@@ -494,6 +496,7 @@ async function saveSettings(e: React.FormEvent) {
     p_price: Number(draft.price),
     p_quantity: Number(draft.quantity),
     p_prize_percent: Number(draft.prize_percent),
+    p_display_prize: Number(draft.display_prize),
     p_draw_date: draft.draw_date,
     p_instagram_1: draft.instagram_1,
     p_instagram_2: draft.instagram_2,
@@ -546,6 +549,7 @@ async function saveSettings(e: React.FormEvent) {
         <form className="settings-form" onSubmit={saveSettings}>
           <label>Valor da cota<input type="number" min="1" step="0.01" value={draft.price} onChange={e=>setDraft({...draft,price:Number(e.target.value)})}/></label>
           <label>Quantidade de cotas<input type="number" min="1" value={draft.quantity} onChange={e=>setDraft({...draft,quantity:Number(e.target.value)})}/></label>
+          <label>Prêmio exibido no site<input    type="number" min="0" step="0.01" value={draft.display_prize} onChange={(e) => setDraft({ ...draft, display_prize: Number(e.target.value) })}/> </label>
           <label>% do prêmio<input type="number" min="0" max="100" value={draft.prize_percent} onChange={e=>setDraft({...draft,prize_percent:Number(e.target.value)})}/></label>
           <label>Data do sorteio<input type="date" value={draft.draw_date} onChange={e=>setDraft({...draft,draw_date:e.target.value})}/></label>
           <label>Instagram 1<input value={draft.instagram_1} onChange={e=>setDraft({...draft,instagram_1:e.target.value})}/></label>
