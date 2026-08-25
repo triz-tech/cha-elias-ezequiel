@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Heart, Baby, Gift, Instagram, ShieldCheck, Sparkles, ArrowRight, LockKeyhole, LogOut, CheckCircle2, XCircle, Settings, Users, Ticket, Copy, RefreshCw } from "lucide-react";
+import { Heart, Baby, Gift, Instagram, ShieldCheck, Sparkles, ArrowRight, LockKeyhole, MessageCircle, LogOut, CheckCircle2, XCircle, Settings, Users, Ticket, Copy, RefreshCw } from "lucide-react";
 import { supabase, isSupabaseConfigured, RaffleSettings, Reservation } from "./lib/supabase";
 
 
@@ -8,6 +8,10 @@ const fallbackSettings: RaffleSettings = {
   title: "Rifa do Elias & Ezequiel",
   price: 15,
   quantity: 50,
+  prize_1: 900,
+  prize_2: 400,
+  prize_3: 200,
+  updated_at: "",
   prize_percent: 20,
   display_prize: 150,
   draw_date: "2026-10-01",
@@ -31,6 +35,8 @@ function dateBR(v: string) {
 function cleanInstagram(v: string) {
   return v.replace(/^@/, "");
 }
+
+const WHATSAPP_PAIS = "+55 21 98006-9468";
 
 export default function App() {
   const [admin, setAdmin] = useState(false);
@@ -192,15 +198,28 @@ return <AdminPage
           </div>
         </section>
 
-        <section className="prize-highlight">
-  <span className="eyebrow">Prêmio dos gêmeos</span>
-  <h2>{money(Number(settings.display_prize))}</h2>
-  <p>
-    O valor do prêmio é calculado automaticamente conforme as configurações da rifa.
-  </p>
+        <section className="prizes-public">
+  <span className="eyebrow">Prêmios do sorteio</span>
+
+  <h2>Três chances de ganhar.</h2>
+
+  <div className="prize-list">
+    <div className="prize first">
+      <span>1º lugar</span>
+      <strong>{money(Number(settings.prize_1))}</strong>
+    </div>
+
+    <div className="prize">
+      <span>2º lugar</span>
+      <strong>{money(Number(settings.prize_2))}</strong>
+    </div>
+
+    <div className="prize">
+      <span>3º lugar</span>
+      <strong>{money(Number(settings.prize_3))}</strong>
+    </div>
+  </div>
 </section>
-
-
 
 
         <section className="numbers-section public-rifa-info-section">
@@ -271,28 +290,47 @@ return <AdminPage
         <strong>{money(reservation.total_amount)}</strong>
       </div>
 
-      {settings.pix_key?.trim() ? (
-        <div className="pix-payment">
-          <p className="pix-label">Pix copia e cola</p>
+<div className="pix-payment">
 
-          <button
-            type="button"
-            className="pix-copy"
-            onClick={copyPix}
-          >
-            <Copy size={18} />
-            Copiar código Pix
-          </button>
+  <p className="pix-label">Chave Pix</p>
 
-          <p className="pix-help">
-            Copie o código e cole na opção <b>Pix copia e cola</b> do seu banco.
-          </p>
-        </div>
-      ) : (
-        <div className="pix-warning">
-          Os pais ainda precisam cadastrar o Pix no painel administrativo.
-        </div>
-      )}
+  <button
+    type="button"
+    className="pix-copy"
+    onClick={copyPix}
+  >
+    <Copy size={18} />
+    Copiar chave Pix
+  </button>
+
+  <p className="pix-help">
+    Copie a chave e cole na opção de pagamento via Pix do seu banco.
+  </p>
+
+  <div className="pix-divider">
+    <span>ou</span>
+  </div>
+
+  <div className="pix-qr-area">
+    <img
+      src="/pix-qr.png"
+      alt="QR Code Pix"
+      className="pix-qr-image"
+    />
+
+    <div className="pix-qr-text">
+      <strong>Escaneie para pagar</strong>
+      <span>
+        Abra o Pix no aplicativo do seu banco e leia o QR Code.
+      </span>
+    </div>
+  </div>
+
+</div>
+
+<small>
+  Guarde estes números até a confirmação do pagamento.
+</small>
 
       <small>
         Guarde estes números até a confirmação do pagamento.
@@ -386,11 +424,51 @@ return <AdminPage
 </section>
 
 
-        <section className="instagram-card">
-          <div><Instagram size={26}/><div><span>Acompanhe o sorteio</span><strong>{dateBR(settings.draw_date)} • {settings.instagram_1} & {settings.instagram_2}</strong></div></div>
-          <a href={`https://instagram.com/${cleanInstagram(settings.instagram_1)}`} target="_blank" rel="noreferrer">Instagram <ArrowRight size={17}/></a>
-        </section>
-      </main>
+        
+<section className="instagram-card">
+  <div>
+    <Instagram size={26} />
+    <div>
+      <span>Acompanhe o sorteio</span>
+      <strong>
+        {dateBR(settings.draw_date)} • {settings.instagram_1} & {settings.instagram_2}
+      </strong>
+    </div>
+  </div>
+
+  <a
+    href={`https://instagram.com/${cleanInstagram(settings.instagram_1)}`}
+    target="_blank"
+    rel="noreferrer"
+  >
+    Instagram <ArrowRight size={17} />
+  </a>
+</section>
+
+<section className="whatsapp-card">
+  <div className="whatsapp-card-info">
+    <div className="whatsapp-icon">
+      <MessageCircle size={24} />
+    </div>
+
+    <div>
+      <span>Ficou com alguma dúvida?</span>
+      <strong>Fale diretamente com os pais</strong>
+    </div>
+  </div>
+
+  <a
+    href={`https://wa.me/${WHATSAPP_PAIS}?text=${encodeURIComponent(
+      "Oi! Vim pela rifa do Elias e Ezequiel 💚"
+    )}`}
+    target="_blank"
+    rel="noreferrer"
+  >
+    WhatsApp
+    <ArrowRight size={17} />
+  </a>
+</section>
+</main>
 
       <footer><span>Feito com 💜 para a chegada de Elias & Ezequiel</span><button onClick={() => setShowAdmin(true)}>Área administrativa</button></footer>
     </div>
@@ -486,24 +564,21 @@ async function load() {
 async function saveSettings(e: React.FormEvent) {
   e.preventDefault();
 
-  if (!supabase) {
-    return setToast("Configure o Supabase primeiro.");
+  const client = supabase;
+
+  if (!client) {
+    setToast("Configure o Supabase primeiro.");
+    return;
   }
 
   setLoading(true);
 
-  const { error } = await supabase.rpc("admin_update_settings", {
+  const { error } = await client.rpc("admin_update_settings", {
     p_price: Number(draft.price),
     p_quantity: Number(draft.quantity),
-    p_prize_percent: Number(draft.prize_percent),
-    p_display_prize: Number(draft.display_prize),
-    p_draw_date: draft.draw_date,
-    p_instagram_1: draft.instagram_1,
-    p_instagram_2: draft.instagram_2,
-    p_pix_key: draft.pix_key,
-    p_pix_name: draft.pix_name,
-    p_pix_city: draft.pix_city,
-    p_intro: draft.intro
+    p_prize_1: Number(draft.prize_1),
+    p_prize_2: Number(draft.prize_2),
+    p_prize_3: Number(draft.prize_3)
   });
 
   if (error) {
@@ -512,7 +587,7 @@ async function saveSettings(e: React.FormEvent) {
     return;
   }
 
-  const { data, error: reloadError } = await supabase
+  const { data, error: reloadError } = await client
     .from("raffle_settings")
     .select("*")
     .eq("id", true)
@@ -521,8 +596,8 @@ async function saveSettings(e: React.FormEvent) {
   setLoading(false);
 
   if (reloadError) {
-    setToast("Salvou, mas não conseguiu atualizar a tela.");
     console.error(reloadError);
+    setToast("Salvou, mas houve erro ao atualizar a tela.");
     return;
   }
 
@@ -546,35 +621,99 @@ async function saveSettings(e: React.FormEvent) {
       <div className="admin-title"><div><span className="eyebrow">Dashboard</span><h1>Controle da rifa</h1></div><div className="admin-stats"><div><Users/><b>{reservations.length}</b><span>reservas</span></div><div><CheckCircle2/><b>{money(paid)}</b><span>confirmado</span></div><div><Ticket/><b>{pendingRes.length}</b><span>pendentes</span></div></div></div>
 
       <section className="admin-card"><div className="card-head"><div><Settings size={20}/><h2>Configurações</h2></div><span>Edite sem mexer no código</span></div>
-        <form className="settings-form" onSubmit={saveSettings}>
-          <label>Valor da cota<input type="number" min="1" step="0.01" value={draft.price} onChange={e=>setDraft({...draft,price:Number(e.target.value)})}/></label>
-          <label>Quantidade de cotas<input type="number" min="1" value={draft.quantity} onChange={e=>setDraft({...draft,quantity:Number(e.target.value)})}/></label>
-          <label>Prêmio exibido no site<input    type="number" min="0" step="0.01" value={draft.display_prize} onChange={(e) => setDraft({ ...draft, display_prize: Number(e.target.value) })}/> </label>
-          <label>% do prêmio<input type="number" min="0" max="100" value={draft.prize_percent} onChange={e=>setDraft({...draft,prize_percent:Number(e.target.value)})}/></label>
-          <label>Data do sorteio<input type="date" value={draft.draw_date} onChange={e=>setDraft({...draft,draw_date:e.target.value})}/></label>
-          <label>Instagram 1<input value={draft.instagram_1} onChange={e=>setDraft({...draft,instagram_1:e.target.value})}/></label>
-          <label>Instagram 2<input value={draft.instagram_2} onChange={e=>setDraft({...draft,instagram_2:e.target.value})}/></label>
-          <label className="wide">Pix Copia e Cola<textarea
-    value={draft.pix_key}
-    onChange={(e) =>
-      setDraft({
-        ...draft,
-        pix_key: e.target.value
-      })
-    }
-    placeholder="Cole aqui o código Pix Copia e Cola gerado pelo seu banco"
-  />
-  <small>
-    Cole aqui o código completo gerado pelo aplicativo do banco.
-  </small>
-</label>
-          
-          <label>Nome no Pix<input value={draft.pix_name} onChange={e=>setDraft({...draft,pix_name:e.target.value})}/></label>
-          <label>Cidade do Pix<input value={draft.pix_city} onChange={e=>setDraft({...draft,pix_city:e.target.value})}/></label>
-          <label className="wide">Texto de apresentação<textarea value={draft.intro} onChange={e=>setDraft({...draft,intro:e.target.value})}/></label>
-          <div className="math wide"><b>Automático:</b> se todas as {draft.quantity} cotas forem vendidas a {money(Number(draft.price))}, arrecada {money(Number(draft.quantity)*Number(draft.price))}; prêmio ({draft.prize_percent}%) = {money(Number(draft.quantity)*Number(draft.price)*Number(draft.prize_percent)/100)}; gêmeos = {money(Number(draft.quantity)*Number(draft.price)*(100-Number(draft.prize_percent))/100)}.</div>
-          <button className="btn primary" disabled={loading}>{loading?"Salvando...":"Salvar configurações"}</button>
-        </form>
+<form className="settings-form" onSubmit={saveSettings}>
+
+  <label>
+    Valor da cota
+    <input
+      type="number"
+      min="1"
+      step="0.01"
+      value={draft.price}
+      onChange={(e) =>
+        setDraft({
+          ...draft,
+          price: Number(e.target.value)
+        })
+      }
+    />
+  </label>
+
+  <label>
+    Quantidade total de cotas
+    <input
+      type="number"
+      min="1"
+      value={draft.quantity}
+      onChange={(e) =>
+        setDraft({
+          ...draft,
+          quantity: Number(e.target.value)
+        })
+      }
+    />
+  </label>
+
+  <label>
+    1º lugar
+    <input
+      type="number"
+      min="0"
+      step="0.01"
+      value={draft.prize_1}
+      onChange={(e) =>
+        setDraft({
+          ...draft,
+          prize_1: Number(e.target.value)
+        })
+      }
+    />
+  </label>
+
+  <label>
+    2º lugar
+    <input
+      type="number"
+      min="0"
+      step="0.01"
+      value={draft.prize_2}
+      onChange={(e) =>
+        setDraft({
+          ...draft,
+          prize_2: Number(e.target.value)
+        })
+      }
+    />
+  </label>
+
+  <label>
+    3º lugar
+    <input
+      type="number"
+      min="0"
+      step="0.01"
+      value={draft.prize_3}
+      onChange={(e) =>
+        setDraft({
+          ...draft,
+          prize_3: Number(e.target.value)
+        })
+      }
+    />
+  </label>
+
+  <button className="btn primary" disabled={loading}>
+    {loading ? "Salvando..." : "Salvar configurações"}
+  </button>
+
+  {settings.updated_at && (
+    <small className="last-update">
+      Última atualização:{" "}
+      {new Date(settings.updated_at).toLocaleString("pt-BR")}
+    </small>
+  )}
+
+</form>
       </section>
 
       <section className="admin-card"><div className="card-head"><div><Ticket size={20}/><h2>Pagamentos</h2></div><span>Confirme ou libere as reservas</span></div>

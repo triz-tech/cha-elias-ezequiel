@@ -10,22 +10,27 @@ export const isSupabaseConfigured = Boolean(
 export const supabase: SupabaseClient | null = isSupabaseConfigured
   ? createClient(url!, anonKey!)
   : null;
-
+  
 export type RaffleSettings = {
   id: boolean;
   title: string;
   price: number;
   quantity: number;
+
+  prize_1: number;
+  prize_2: number;
+  prize_3: number;
+  updated_at: string;
+
   prize_percent: number;
+  display_prize: number;
   draw_date: string;
   instagram_1: string;
   instagram_2: string;
   pix_key: string;
   pix_name: string;
   pix_city: string;
-  pix_copy_paste?: string | null;
   intro: string;
-  display_prize: number;
 };
 
 export type Ticket = {
