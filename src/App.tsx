@@ -450,10 +450,10 @@ async function loadPublic() {
                   {reservation.id.slice(0, 8).toUpperCase()}
                 </strong>
 
-              <div className="payment-note">
-                Guarde estes números até a confirmação do pagamento.
-
-              </div>
+<div className="payment-note">
+  A confirmação do Pix é feita manualmente pelos pais e pode levar um tempinho.
+  Guarde seu <strong>código de rastreio</strong> para acompanhar a confirmação da reserva.
+</div>
               </div>
 
               <div className="amount">
