@@ -55,6 +55,17 @@ type ConsultResult = {
   total_amount: number;
 };
 
+type DrawResult = {
+  id: string;
+  prize_position: number;
+  prize_amount: number;
+  ticket_number: number;
+  reservation_id: string;
+  buyer_name: string;
+  buyer_phone: string | null;
+  drawn_at: string;
+};
+
 function money(value: number) {
   return value.toLocaleString("pt-BR", {
     style: "currency",
@@ -291,6 +302,12 @@ async function loadPublic() {
                 <ArrowRight size={18} />
               </a>
             </div>
+              <div className="hero-draw-date">
+    <span>Sorteio</span>
+    <strong>{dateBR(settings.draw_date)}</strong>
+  </div>
+
+            
 
             <div className="trust">
               <ShieldCheck size={18} />
@@ -330,6 +347,8 @@ async function loadPublic() {
               <span>3º lugar</span>
               <strong>{money(Number(settings.prize_3))}</strong>
             </div>
+
+
           </div>
         </section>
 
@@ -444,7 +463,7 @@ async function loadPublic() {
               </div>
 
               <div className="pix-payment">
-                <p className="pix-label">Chave Pix</p>
+                <p className="pix-label">Pix Copia e Cola</p>
 
                 <button
                   type="button"
@@ -452,13 +471,12 @@ async function loadPublic() {
                   onClick={copyPix}
                 >
                   <Copy size={18} />
-                  Copiar chave Pix
+                  Copiar código Pix
                 </button>
-
+                
                 <p className="pix-help">
-                  Copie a chave e cole na opção de pagamento via Pix do
-                  seu banco.
-                </p>
+                  Copie o código e cole na opção <b>Pix Copia e Cola</b> do seu banco.
+                  </p>
 
                 <div className="pix-divider">
                   <span>ou</span>
@@ -647,11 +665,12 @@ function PurchaseForm({
   const [message, setMessage] = useState("");
   const [qty, setQty] = useState(1);
   const [busy, setBusy] = useState(false);
+  const [phone, setPhone] = useState("");
 
   async function submit(event: React.FormEvent) {
     event.preventDefault();
 
-    if (!name.trim() || !relationship) {
+    if (!name.trim() || !phone.trim() || !relationship) {
       setToast("Preencha seu nome e parentesco.");
       return;
     }
@@ -667,12 +686,13 @@ function PurchaseForm({
 
     setBusy(true);
 
-    const { data, error } = await client.rpc("reserve_tickets", {
-      p_name: name.trim(),
-      p_relationship: relationship,
-      p_message: message.trim() || null,
-      p_quantity: qty,
-    });
+const { data, error } = await client.rpc("reserve_tickets", {
+  p_name: name.trim(),
+  p_phone: phone.trim(),
+  p_relationship: relationship,
+  p_message: message.trim() || null,
+  p_quantity: qty,
+});
 
     setBusy(false);
 
@@ -708,6 +728,16 @@ function PurchaseForm({
           onChange={(event) => setName(event.target.value)}
           placeholder="Ex.: Maria Silva"
           required
+        />
+      </label>
+
+      <label>Telefone / WhatsApp
+        <input
+        type="tel"
+        value={phone}
+        onChange={(event) => setPhone(event.target.value)}
+        placeholder="Ex.: (21) 99999-9999"
+        required
         />
       </label>
 
@@ -799,6 +829,10 @@ function AdminPage({
   const [draft, setDraft] = useState(settings);
   const [loading, setLoading] = useState(false);
 
+  const [drawResults, setDrawResults] = useState<DrawResult[]>([]);
+  const [drawingPrize, setDrawingPrize] = useState<number | null>(null);
+
+
   async function loadReservations() {
     const client = supabase;
 
@@ -841,6 +875,55 @@ function AdminPage({
     setDraft(currentSettings);
     onSettingsChange(currentSettings);
   }
+}
+
+async function loadDrawResults() {
+  const client = supabase;
+
+  if (!client || !admin) return;
+
+  const { data, error } = await client
+    .from("draw_results")
+    .select("*")
+    .order("prize_position", {
+      ascending: true,
+    });
+
+  if (error) {
+    console.error("Erro ao carregar sorteio:", error);
+    return;
+  }
+
+  setDrawResults((data ?? []) as DrawResult[]);
+}
+
+async function drawPrize(position: number) {
+  const client = supabase;
+
+  if (!client) return;
+
+  const confirmed = window.confirm(
+    `Tem certeza que deseja realizar o sorteio do ${position}º prêmio?\n\nO resultado ficará registrado no sistema.`
+  );
+
+  if (!confirmed) return;
+
+  setDrawingPrize(position);
+
+  const { error } = await client.rpc("draw_prize", {
+    p_prize_position: position,
+  });
+
+  setDrawingPrize(null);
+
+  if (error) {
+    setToast(error.message);
+    return;
+  }
+
+  await loadDrawResults();
+
+  setToast(`${position}º prêmio sorteado!`);
 }
   
 
@@ -926,13 +1009,14 @@ function AdminPage({
 
     setLoading(true);
 
-    const { error } = await client.rpc("admin_update_settings", {
-      p_price: Number(draft.price),
-      p_quantity: Number(draft.quantity),
-      p_prize_1: Number(draft.prize_1),
-      p_prize_2: Number(draft.prize_2),
-      p_prize_3: Number(draft.prize_3),
-    });
+const { error } = await client.rpc("admin_update_settings", {
+  p_price: Number(draft.price),
+  p_quantity: Number(draft.quantity),
+  p_prize_1: Number(draft.prize_1),
+  p_prize_2: Number(draft.prize_2),
+  p_prize_3: Number(draft.prize_3),
+  p_draw_date: draft.draw_date,
+});
 
     if (error) {
       setLoading(false);
@@ -970,6 +1054,7 @@ useEffect(() => {
 
   void loadSettings();
   void loadReservations();
+  void loadDrawResults();
 }, [admin]);
 
   if (!admin) {
@@ -1023,27 +1108,37 @@ useEffect(() => {
     );
   }
 
-  const paidReservations = reservations.filter(
-    (reservation) => reservation.status === "paid"
-  );
+const paidReservations = reservations.filter(
+  (reservation) => reservation.status === "paid"
+);
 
-  const pendingReservations = reservations.filter(
-    (reservation) => reservation.status === "pending"
-  );
+const pendingReservations = reservations.filter(
+  (reservation) => reservation.status === "pending"
+);
 
-  const paidAmount = paidReservations.reduce(
-    (total, reservation) =>
-      total + Number(reservation.total_amount),
-    0
-  );
+const paidAmount = paidReservations.reduce(
+  (total, reservation) =>
+    total + Number(reservation.total_amount),
+  0
+);
 
-  const paidTickets = paidReservations.reduce(
-    (total, reservation) =>
-      total + Number(reservation.quantity),
-    0
-  );
+const paidTickets = paidReservations.reduce(
+  (total, reservation) =>
+    total + Number(reservation.quantity),
+  0
+);
 
-  return (
+const today = new Date();
+
+const drawDate = new Date(
+  `${settings.draw_date}T00:00:00`
+);
+
+const drawUnlocked = today >= drawDate;
+
+return (
+
+
     <div className="admin-screen">
       <div className="admin-top">
         <div className="brand">
@@ -1188,6 +1283,20 @@ useEffect(() => {
               />
             </label>
 
+            <label>
+               Data do sorteio
+               <input
+    type="date"
+    value={draft.draw_date}
+    onChange={(event) =>
+      setDraft({
+        ...draft,
+        draw_date: event.target.value,
+      })
+    }
+  />
+</label>
+
             <button
               className="btn primary"
               disabled={loading}
@@ -1207,6 +1316,103 @@ useEffect(() => {
             )}
           </form>
         </section>
+
+<section className="admin-card draw-card">
+  <div className="card-head">
+    <div>
+      <Gift size={20} />
+      <h2>Sorteio</h2>
+    </div>
+
+    <span>{dateBR(settings.draw_date)}</span>
+  </div>
+
+  {!drawUnlocked && (
+    <div className="draw-locked">
+      <LockKeyhole size={22} />
+
+      <div>
+        <strong>Sorteio bloqueado</strong>
+        <span>
+          Os sorteios serão liberados em{" "}
+          {dateBR(settings.draw_date)}
+        </span>
+      </div>
+    </div>
+  )}
+
+  <div className="draw-prizes">
+    {[1, 2, 3].map((position) => {
+      const result = drawResults.find(
+        (item) => item.prize_position === position
+      );
+
+      const prize =
+        position === 1
+          ? settings.prize_1
+          : position === 2
+          ? settings.prize_2
+          : settings.prize_3;
+
+      return (
+        <div className="draw-prize" key={position}>
+          <div className="draw-prize-title">
+            <span>{position}º lugar</span>
+            <strong>{money(Number(prize))}</strong>
+          </div>
+
+          {result ? (
+            <div className="draw-winner">
+              <span>Número sorteado</span>
+
+              <strong className="winner-number">
+                {String(result.ticket_number).padStart(2, "0")}
+              </strong>
+
+              <div>
+                <small>Nome</small>
+                <b>{result.buyer_name}</b>
+              </div>
+
+              <div>
+                <small>Telefone / WhatsApp</small>
+                <b>{result.buyer_phone || "Não informado"}</b>
+              </div>
+
+              <div>
+                <small>Código da reserva</small>
+                <b>
+                  {result.reservation_id
+                    .slice(0, 8)
+                    .toUpperCase()}
+                </b>
+              </div>
+
+              <small>
+                Sorteado em{" "}
+                {new Date(result.drawn_at).toLocaleString("pt-BR")}
+              </small>
+            </div>
+          ) : (
+            <button
+              type="button"
+              className="btn primary full"
+              disabled={!drawUnlocked || drawingPrize !== null}
+              onClick={() => drawPrize(position)}
+            >
+              {!drawUnlocked
+                ? "Aguardando data do sorteio"
+                : drawingPrize === position
+                ? "Sorteando..."
+                : `Sortear ${position}º prêmio`}
+            </button>
+          )}
+        </div>
+      );
+    })}
+  </div>
+</section>
+
 
         <section className="admin-card">
           <div className="card-head">
