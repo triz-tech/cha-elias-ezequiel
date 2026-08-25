@@ -1171,6 +1171,8 @@ return (
           </div>
 
           <div className="admin-stats">
+
+          
             <div>
               <Users />
               <b>{paidReservations.length}</b>
@@ -1181,6 +1183,12 @@ return (
               <CheckCircle2 />
               <b>{money(paidAmount)}</b>
               <span>confirmado</span>
+            </div>
+            
+            <div>
+            <Ticket />
+            <b>{paidTickets} de {settings.quantity}</b>
+            <span>cotas vendidas</span>
             </div>
 
             <div>
