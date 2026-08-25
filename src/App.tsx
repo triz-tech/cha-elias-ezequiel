@@ -464,7 +464,7 @@ async function loadPublic() {
               </div>
 
               <div className="pix-payment">
-                <p className="pix-label">Pix Copia e Cola</p>
+                <p className="pix-label">Chave Pix</p>
 
                 <button
                   type="button"
@@ -476,7 +476,7 @@ async function loadPublic() {
                 </button>
                 
                 <p className="pix-help">
-                  Copie o código e cole na opção <b>Pix Copia e Cola</b> do seu banco.
+                  Copie a chave e informe o valor da sua reserva no aplicativo do seu banco.
                   </p>
 
                 <div className="pix-divider">
