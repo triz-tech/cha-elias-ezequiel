@@ -329,7 +329,8 @@ async function loadPublic() {
         </section>
 
         <section className="prizes-public">
-          <span className="eyebrow">Prêmios do sorteio</span>
+          <span className="eyebrow">R$ 1.500 EM PRÊMIOS NO TOTAL</span>
+          
           <h2>Três chances de ganhar.</h2>
 
           <div className="prize-list">
