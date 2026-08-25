@@ -1415,16 +1415,25 @@ return (
 </section>
 
 
-        <section className="admin-card">
-          <div className="card-head">
-            <div>
-              <Ticket size={20} />
-              <h2>Pagamentos</h2>
-            </div>
+<section className="admin-card">
+  <div className="card-head">
+    <div>
+      <Ticket size={20} />
+      <h2>Pagamentos</h2>
+    </div>
 
-            <span>Confirme ou libere as reservas</span>
-          </div>
+    <span>Confirme ou libere as reservas</span>
+  </div>
 
+  <div className="admin-payment-warning">
+    <strong>Antes de confirmar:</strong>
+    <span>
+      Confirme o Pix somente após conferir o comprovante e o recebimento do valor.
+      <b> Liberar</b> significa cancelar a reserva e devolver o número para ficar disponível novamente.
+    </span>
+  </div>
+
+  {/* daqui pra baixo continua sua lista de pagamentos */}
           {reservations.length === 0 ? (
             <div className="empty">Ainda não há reservas.</div>
           ) : (

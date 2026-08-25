@@ -1430,3 +1430,28 @@ textarea:focus {
   }
 }
 
+.admin-payment-warning {
+  margin-bottom: 18px;
+  padding: 14px 16px;
+
+  display: grid;
+  gap: 4px;
+
+  background: #fff8e7;
+  border: 1px solid #ead8a6;
+  border-radius: 14px;
+
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.admin-payment-warning strong {
+  color: var(--ink);
+  font-size: 13px;
+}
+
+.admin-payment-warning b {
+  color: #9a6a00;
+}
+
