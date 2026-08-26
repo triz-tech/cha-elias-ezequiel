@@ -435,26 +435,28 @@ async function loadPublic() {
                 pais conferirem o Pix.
               </p>
 
-              <div className="reserved-numbers">
-                {reservation.ticket_numbers.map((number) => (
-                  <b key={number}>
-                    {String(number).padStart(2, "0")}
-                  </b>
-                ))}
-              </div>
-
-              <div className="reservation-code-box">
-                <span>Código da sua reserva</span>
-
-                <strong>
-                  {reservation.id.slice(0, 8).toUpperCase()}
-                </strong>
-
-<div className="payment-note">
-  A confirmação do Pix é feita manualmente pelos pais e pode levar um tempinho.
-  Guarde seu <strong>código de rastreio</strong> para acompanhar a confirmação da reserva.
+<div className="reserved-numbers">
+  {reservation.ticket_numbers.map((number) => (
+    <b key={number}>
+      {String(number).padStart(2, "0")}
+    </b>
+  ))}
 </div>
-              </div>
+
+<div className="reservation-code-box">
+  <span className="reservation-code-label">
+    Código da sua reserva
+  </span>
+
+  <strong className="reservation-code">
+    {reservation.id.slice(0, 8).toUpperCase()}
+  </strong>
+
+  <p className="reservation-code-help">
+    A confirmação do Pix é manual e pode levar um tempinho.
+    Guarde este código para acompanhar sua reserva depois.
+  </p>
+</div>
 
               <div className="amount">
                 <span>Total</span>

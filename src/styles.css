@@ -1455,3 +1455,35 @@ textarea:focus {
   color: #9a6a00;
 }
 
+.reservation-code-box {
+  margin-top: 18px;
+  padding: 20px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 7px;
+
+  background: #f2f8e8;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+}
+
+.reservation-code-label {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.reservation-code {
+  font-size: 27px;
+  line-height: 1.1;
+  letter-spacing: 0.12em;
+  color: var(--green);
+}
+
+.reservation-code-help {
+  margin: 7px 0 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--muted);
+}
