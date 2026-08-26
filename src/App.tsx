@@ -351,9 +351,9 @@ setConsultResults(data as ConsultResult[]);
               <span>3º lugar</span>
               <strong>{money(Number(settings.prize_3))}</strong>
             </div>
-
-
           </div>
+          <p className="prize-note"> Os valores dos prêmios podem ser ajustados de acordo com a arrecadação da rifa.</p>
+
         </section>
 
         <section className="numbers-section public-rifa-info-section">
@@ -443,13 +443,22 @@ setConsultResults(data as ConsultResult[]);
             <div className="payment-info">
               <span className="eyebrow">Reserva criada</span>
 
-              <h2>Agora é só fazer o Pix 💚</h2>
+<h2>Agora é só fazer o Pix 💚</h2>
 
-              <p>
-                Suas cotas foram separadas em ordem crescente. O
-                pagamento ficará <b>aguardando confirmação</b> até os
-                pais conferirem o Pix.
-              </p>
+<p>
+  Seus números foram sorteados e reservados para você.
+  O pagamento ficará <b>aguardando confirmação</b> até os
+  pais conferirem o Pix.
+</p>
+
+<div className="payment-deadline">
+  <strong>⏱ Importante</strong>
+  <span>
+    Sua reserva fica ativa por até 24 horas. Após esse prazo,
+    se o pagamento não for confirmado, os números poderão ser
+    liberados novamente.
+  </span>
+</div>
 
 <div className="reserved-numbers">
   {reservation.ticket_numbers.map((number) => (
@@ -481,42 +490,57 @@ setConsultResults(data as ConsultResult[]);
                 </strong>
               </div>
 
-              <div className="pix-payment">
-                <p className="pix-label">Chave Pix</p>
+<div className="pix-payment">
+  <p className="pix-label">Chave Pix</p>
 
-                <button
-                  type="button"
-                  className="pix-copy"
-                  onClick={copyPix}
-                >
-                  <Copy size={18} />
-                  Copiar código Pix
-                </button>
-                
-                <p className="pix-help">
-                  Copie a chave e informe o valor da sua reserva no aplicativo do seu banco.
-                  </p>
+  <button
+    type="button"
+    className="pix-copy"
+    onClick={copyPix}
+  >
+    <Copy size={18} />
+    Copiar chave Pix
+  </button>
 
-                <div className="pix-divider">
-                  <span>ou</span>
-                </div>
+  <p className="pix-help">
+    Copie a chave e informe o valor da sua reserva no aplicativo do seu banco.
+  </p>
 
-                <div className="pix-qr-area">
-                  <img
-                    src="/pix-qr.png"
-                    alt="QR Code Pix"
-                    className="pix-qr-image"
-                  />
+  <div className="pix-divider">
+    <span>ou</span>
+  </div>
 
-                  <div className="pix-qr-text">
-                    <strong>Escaneie para pagar</strong>
-                    <span>
-                      Abra o Pix no aplicativo do seu banco e leia o QR
-                      Code.
-                    </span>
-                  </div>
-                </div>
-              </div>
+  <div className="pix-qr-area">
+    <img
+      src="/pix-qr.png"
+      alt="QR Code Pix"
+      className="pix-qr-image"
+    />
+
+    <div className="pix-details">
+      <strong>Dados para conferência</strong>
+
+      <div className="pix-detail-row">
+        <span>Nome</span>
+        <b>Wanderson Pereira Serafim</b>
+      </div>
+
+      <div className="pix-detail-row">
+        <span>CPF</span>
+        <b>•••.519.307-••</b>
+      </div>
+
+      <div className="pix-detail-row">
+        <span>Banco</span>
+        <b>260 - Nu Pagamentos S.A. - Instituição de Pagamento</b>
+      </div>
+
+      <small>
+        Confira os dados antes de concluir o pagamento.
+      </small>
+    </div>
+  </div>
+</div>
             </div>
           </section>
         )}
@@ -871,17 +895,17 @@ async function submit(event: React.FormEvent) {
   </div>
 )}
       <button className="btn primary full" disabled={busy}>
-        {busy
-          ? "Reservando..."
-          : `Reservar ${qty} ${
-              qty > 1 ? "cotas" : "cota"
-            } • ${money(qty * Number(settings.price))}`}
+  {busy
+    ? "Gerando reserva..."
+    : `Comprar ${qty} ${
+        qty > 1 ? "cotas" : "cota"
+      } • ${money(qty * Number(settings.price))}`}
 
-        <ArrowRight size={18} />
-      </button>
+  <ArrowRight size={18} />
+</button>
 
       <small className="form-note">
-        Os números são atribuídos automaticamente do menor para o maior.
+        Após a compra, sua cota fica reservada por até 24 horas aguardando a confirmação do Pix.
       </small>
     </form>
   );
@@ -910,6 +934,9 @@ function AdminPage({
 
   const [drawResults, setDrawResults] = useState<DrawResult[]>([]);
   const [drawingPrize, setDrawingPrize] = useState<number | null>(null);
+
+  const [statusFilter, setStatusFilter] =
+  useState<"all" | "pending" | "paid" | "cancelled">("all");
 
 
   async function loadReservations() {
@@ -1195,6 +1222,11 @@ const pendingReservations = reservations.filter(
   (reservation) => reservation.status === "pending"
 );
 
+const filteredReservations = reservations.filter((reservation) => {
+  if (statusFilter === "all") return true;
+  return reservation.status === statusFilter;
+});
+
 const paidAmount = paidReservations.reduce(
   (total, reservation) =>
     total + Number(reservation.total_amount),
@@ -1206,6 +1238,14 @@ const paidTickets = paidReservations.reduce(
     total + Number(reservation.quantity),
   0
 );
+
+
+const totalPrizes =
+  Number(settings.prize_1) +
+  Number(settings.prize_2) +
+  Number(settings.prize_3);
+
+const balanceAfterPrizes = paidAmount - totalPrizes;
 
 const today = new Date();
 
@@ -1275,6 +1315,28 @@ return (
               <span>pendentes</span>
             </div>
           </div>
+
+          <div className={`balance-stat ${balanceAfterPrizes >= 0 ? "positive" : "negative"}`}>
+  <div className="balance-icon">
+    <Sparkles size={18} />
+  </div>
+
+  <div className="balance-content">
+    <span>
+      {balanceAfterPrizes >= 0
+        ? "Saldo após os prêmios"
+        : "Falta para cobrir os prêmios"}
+    </span>
+
+    <b>{money(Math.abs(balanceAfterPrizes))}</b>
+
+    <small>
+      Prêmios: {money(totalPrizes)}
+    </small>
+  </div>
+</div>
+
+          
         </div>
 
         <section className="admin-card">
@@ -1519,12 +1581,50 @@ return (
     </span>
   </div>
 
+  
+
   {/* daqui pra baixo continua sua lista de pagamentos */}
-          {reservations.length === 0 ? (
-            <div className="empty">Ainda não há reservas.</div>
-          ) : (
-            <div className="orders">
-              {reservations.map((reservation) => (
+<div className="payment-filters">
+  <button
+    type="button"
+    className={statusFilter === "all" ? "active" : ""}
+    onClick={() => setStatusFilter("all")}
+  >
+    Todas
+  </button>
+
+  <button
+    type="button"
+    className={statusFilter === "pending" ? "active" : ""}
+    onClick={() => setStatusFilter("pending")}
+  >
+    Pendentes
+  </button>
+
+  <button
+    type="button"
+    className={statusFilter === "paid" ? "active" : ""}
+    onClick={() => setStatusFilter("paid")}
+  >
+    Confirmadas
+  </button>
+
+  <button
+    type="button"
+    className={statusFilter === "cancelled" ? "active" : ""}
+    onClick={() => setStatusFilter("cancelled")}
+  >
+    Canceladas
+  </button>
+</div>
+
+{filteredReservations.length === 0 ? (
+  <div className="empty">
+    Nenhuma reserva encontrada neste filtro.
+  </div>
+) : (
+  <div className="orders">
+    {filteredReservations.map((reservation) => (
                 <div className="order" key={reservation.id}>
                   <div className="order-main">
                     <div className="order-name">
