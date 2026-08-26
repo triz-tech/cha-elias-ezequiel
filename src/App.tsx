@@ -50,11 +50,12 @@ const fallbackSettings: RaffleSettings = {
 const WHATSAPP_PAIS = "5521980069468";
 
 type ConsultResult = {
+  reservation_code: string;
   status: "pending" | "paid" | "cancelled";
   ticket_numbers: number[];
   total_amount: number;
+  created_at: string;
 };
-
 type DrawResult = {
   id: string;
   prize_position: number;
@@ -96,8 +97,10 @@ export default function App() {
   const [toast, setToast] = useState("");
 
   const [consultCode, setConsultCode] = useState("");
-  const [consultResult, setConsultResult] =
-    useState<ConsultResult | null>(null);
+
+  const [consultResults, setConsultResults] =
+  useState<ConsultResult[]>([]);
+
   const [consultLoading, setConsultLoading] = useState(false);
   const [consultError, setConsultError] = useState("");
 
@@ -147,11 +150,11 @@ async function loadPublic() {
 
     setConsultLoading(true);
     setConsultError("");
-    setConsultResult(null);
+    setConsultResults([]);
 
-    const { data, error } = await client.rpc("consult_reservation", {
-      p_code: code,
-    });
+const { data, error } = await client.rpc("find_reservation", {
+  p_search: code,
+});
 
     setConsultLoading(false);
 
@@ -161,12 +164,12 @@ async function loadPublic() {
       return;
     }
 
-    if (!data || data.length === 0) {
-      setConsultError("Reserva não encontrada.");
-      return;
-    }
+if (!data || data.length === 0) {
+  setConsultError("Reserva não encontrada.");
+  return;
+}
 
-    setConsultResult(data[0] as ConsultResult);
+setConsultResults(data as ConsultResult[]);
   }
 
   async function copyPix() {
@@ -415,11 +418,24 @@ async function loadPublic() {
             </div>
           </div>
 
-          <PurchaseForm
-            settings={settings}
-            onSuccess={setReservation}
-            setToast={setToast}
-          />
+<PurchaseForm
+  settings={settings}
+  onSuccess={setReservation}
+  setToast={setToast}
+  onConsultPhone={(phone) => {
+    setConsultCode(phone);
+    setConsultError("");
+    setConsultResults([]);
+
+    setTimeout(() => {
+      document
+        .querySelector(".consult-card")
+        ?.scrollIntoView({ behavior: "smooth" });
+    }, 50);
+  }}
+/>
+
+          
         </section>
 
         {reservation && (
@@ -511,21 +527,21 @@ async function loadPublic() {
             <h2>Consulte sua reserva</h2>
 
             <p>
-              Digite o código que você recebeu no momento da reserva
-              para acompanhar suas cotas e a confirmação do pagamento.
+              Digite seu telefone ou o código da reserva para acompanhar
+              suas cotas e a confirmação do pagamento.
             </p>
           </div>
 
           <div className="consult-form">
             <input
-              type="text"
-              value={consultCode}
-              onChange={(event) =>
-                setConsultCode(event.target.value.toUpperCase())
-              }
-              placeholder="Ex.: DF6808A6"
-              maxLength={8}
+            type="text"
+            value={consultCode}
+            onChange={(event) =>
+              setConsultCode(event.target.value)
+            }
+            placeholder="Telefone ou código da reserva"
             />
+
 
             <button
               type="button"
@@ -542,55 +558,68 @@ async function loadPublic() {
             <div className="consult-error">{consultError}</div>
           )}
 
-          {consultResult && (
-            <div className="consult-result">
-              <div className="consult-status">
-                <span>Status</span>
+          {consultResults.length > 0 && (
+  <div className="consult-results-list">
+    {consultResults.length > 1 && (
+      <div className="consult-found">
+        Encontramos {consultResults.length} reservas com este telefone.
+      </div>
+    )}
 
-                <strong
-                  className={`status-${consultResult.status}`}
-                >
-                  {consultResult.status === "paid"
-                    ? "Pagamento confirmado ✓"
-                    : consultResult.status === "pending"
-                    ? "Aguardando confirmação"
-                    : "Reserva cancelada"}
-                </strong>
-              </div>
+    {consultResults.map((result) => (
+      <div
+        className="consult-result"
+        key={result.reservation_code}
+      >
+        <div className="consult-status">
+          <div>
+            <span>Reserva</span>
+            <strong>{result.reservation_code}</strong>
+          </div>
 
-              <div className="consult-tickets">
-                <span>Suas cotas</span>
+          <strong className={`status-${result.status}`}>
+            {result.status === "paid"
+              ? "Pagamento confirmado ✓"
+              : result.status === "pending"
+              ? "Aguardando confirmação"
+              : "Reserva cancelada"}
+          </strong>
+        </div>
 
-                <div className="reserved-numbers">
-                  {consultResult.ticket_numbers.map((number) => (
-                    <b key={number}>
-                      {String(number).padStart(2, "0")}
-                    </b>
-                  ))}
-                </div>
-              </div>
+        <div className="consult-tickets">
+          <span>Suas cotas</span>
 
-              <div className="amount">
-                <span>Valor</span>
-                <strong>
-                  {money(Number(consultResult.total_amount))}
-                </strong>
-              </div>
+          <div className="reserved-numbers">
+            {result.ticket_numbers.map((number) => (
+              <b key={number}>
+                {String(number).padStart(2, "0")}
+              </b>
+            ))}
+          </div>
+        </div>
 
-              {consultResult.status === "pending" && (
-                <p>
-                  Seu pagamento ainda está aguardando confirmação dos
-                  pais.
-                </p>
-              )}
+        <div className="amount">
+          <span>Valor</span>
+          <strong>
+            {money(Number(result.total_amount))}
+          </strong>
+        </div>
 
-              {consultResult.status === "paid" && (
-                <p className="consult-success">
-                  Pagamento confirmado. Obrigado por participar! 💚
-                </p>
-              )}
-            </div>
-          )}
+        {result.status === "pending" && (
+          <p>
+            Seu pagamento ainda está aguardando confirmação dos pais.
+          </p>
+        )}
+
+        {result.status === "paid" && (
+          <p className="consult-success">
+            Pagamento confirmado. Obrigado por participar! 💚
+          </p>
+        )}
+      </div>
+    ))}
+  </div>
+)}
         </section>
 
         <section className="instagram-card">
@@ -658,11 +687,14 @@ function PurchaseForm({
   settings,
   onSuccess,
   setToast,
+  onConsultPhone,
 }: {
   settings: RaffleSettings;
   onSuccess: (reservation: Reservation) => void;
   setToast: (message: string) => void;
+  onConsultPhone: (phone: string) => void;
 }) {
+
   const [name, setName] = useState("");
   const [relationship, setRelationship] = useState("");
   const [message, setMessage] = useState("");
@@ -670,53 +702,67 @@ function PurchaseForm({
   const [busy, setBusy] = useState(false);
   const [phone, setPhone] = useState("");
 
-  async function submit(event: React.FormEvent) {
-    event.preventDefault();
+  const [duplicatePhone, setDuplicatePhone] = useState(false);
 
-    if (!name.trim() || !phone.trim() || !relationship) {
-      setToast("Preencha seu nome e parentesco.");
-      return;
-    }
 
-    const client = supabase;
+  async function createReservation(allowDuplicate = false) {
+  const client = supabase;
 
-    if (!client) {
-      setToast(
-        "Modo demonstração. Configure o Supabase no arquivo .env.local para ativar a compra."
-      );
-      return;
-    }
-
-    setBusy(true);
-
-const { data, error } = await client.rpc("reserve_tickets", {
-  p_name: name.trim(),
-  p_phone: phone.trim(),
-  p_relationship: relationship,
-  p_message: message.trim() || null,
-  p_quantity: qty,
-});
-
-    setBusy(false);
-
-    if (error) {
-      setToast(
-        error.message.includes("available")
-          ? "Não há cotas suficientes disponíveis."
-          : error.message
-      );
-      return;
-    }
-
-    onSuccess(data as Reservation);
-    setToast("Cotas reservadas! Agora faça o Pix.");
-
-    window.scrollTo({
-      top: document.body.scrollHeight,
-      behavior: "smooth",
-    });
+  if (!client) {
+    setToast("Configure o Supabase primeiro.");
+    return;
   }
 
+  setBusy(true);
+
+  const { data, error } = await client.rpc("reserve_tickets", {
+    p_name: name.trim(),
+    p_phone: phone.trim(),
+    p_relationship: relationship,
+    p_message: message.trim() || null,
+    p_quantity: qty,
+    p_allow_duplicate: allowDuplicate,
+  });
+
+  setBusy(false);
+
+  if (error) {
+    if (error.message.includes("DUPLICATE_PHONE")) {
+      setDuplicatePhone(true);
+      return;
+    }
+
+    setToast(error.message);
+    return;
+  }
+
+  setDuplicatePhone(false);
+  onSuccess(data as Reservation);
+  setToast("Cotas reservadas! Agora faça o Pix.");
+
+  window.scrollTo({
+    top: document.body.scrollHeight,
+    behavior: "smooth",
+  });
+}
+
+async function submit(event: React.FormEvent) {
+  event.preventDefault();
+
+  if (!name.trim() || !phone.trim() || !relationship) {
+    setToast("Preencha seu nome, telefone e parentesco.");
+    return;
+  }
+
+  const phoneDigits = phone.replace(/\D/g, "");
+
+  if (phoneDigits.length < 10 || phoneDigits.length > 13) {
+    setToast("Digite um telefone válido com DDD.");
+    return;
+  }
+
+  await createReservation(false);
+}
   return (
     <form className="purchase-form" onSubmit={submit}>
       <div className="form-title">
@@ -734,15 +780,17 @@ const { data, error } = await client.rpc("reserve_tickets", {
         />
       </label>
 
-      <label>Telefone / WhatsApp
-        <input
-        type="tel"
-        value={phone}
-        onChange={(event) => setPhone(event.target.value)}
-        placeholder="Ex.: (21) 99999-9999"
-        required
-        />
-      </label>
+<label>
+  Telefone / WhatsApp
+  <input
+    type="tel"
+    inputMode="numeric"
+    value={phone}
+    onChange={(event) => setPhone(event.target.value)}
+    placeholder="Ex.: (21) 99999-9999"
+    required
+  />
+</label>
 
       <label>
         Você é...
@@ -794,6 +842,34 @@ const { data, error } = await client.rpc("reserve_tickets", {
         </div>
       </label>
 
+{duplicatePhone && (
+  <div className="duplicate-warning">
+    <strong>Você já tem uma reserva com este telefone 💚</strong>
+
+    <p>
+      Quer consultar sua reserva ou comprar mais cotas?
+    </p>
+
+    <div className="duplicate-actions">
+      <button
+        type="button"
+        onClick={() => {
+          setDuplicatePhone(false);
+          onConsultPhone(phone);
+        }}
+      >
+        Consultar reserva
+      </button>
+
+      <button
+        type="button"
+        onClick={() => createReservation(true)}
+      >
+        Comprar mais cotas
+      </button>
+    </div>
+  </div>
+)}
       <button className="btn primary full" disabled={busy}>
         {busy
           ? "Reservando..."

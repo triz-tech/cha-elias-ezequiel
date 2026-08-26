@@ -1487,3 +1487,97 @@ textarea:focus {
   line-height: 1.5;
   color: var(--muted);
 }
+
+.duplicate-warning {
+  margin: 16px 0;
+  padding: 18px;
+  border: 1px solid #d6e5c2;
+  border-radius: 16px;
+  background: #f5faec;
+}
+
+.duplicate-warning > strong {
+  display: block;
+  margin-bottom: 6px;
+  color: #173b2b;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.duplicate-warning > p {
+  margin: 0 0 14px;
+  color: #667064;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.duplicate-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.duplicate-actions button {
+  width: 100%;
+  min-height: 42px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+/* Consultar */
+.duplicate-actions button:first-child {
+  border: 1px solid #aac78d;
+  background: white;
+  color: #47752c;
+}
+
+/* Comprar novamente */
+.duplicate-actions button:last-child {
+  border: 1px solid #6fa63e;
+  background: #6fa63e;
+  color: white;
+}
+
+.duplicate-actions button:hover {
+  transform: translateY(-1px);
+}
+
+@media (max-width: 480px) {
+  .duplicate-actions {
+    grid-template-columns: 1fr;
+  }
+}
+
+.consult-results-list {
+  display: grid;
+  gap: 14px;
+  margin-top: 18px;
+}
+
+.consult-found {
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: var(--soft);
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.consult-status > div {
+  display: grid;
+  gap: 3px;
+}
+
+.consult-status > div > span {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.consult-status > div > strong {
+  letter-spacing: 0.08em;
+}
