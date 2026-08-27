@@ -288,6 +288,25 @@ textarea:focus {
   color: var(--ink);
 }
 
+.draw-date-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.draw-countdown {
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: #e8f3d2;
+  color: #5f8f3d !important;
+  font-size: 11px !important;
+  font-weight: 700;
+  letter-spacing: 0 !important;
+  text-transform: none !important;
+  white-space: nowrap;
+}
+
 .trust {
   display: flex;
   align-items: center;
@@ -2135,4 +2154,35 @@ footer button {
 
 .receipt-whatsapp:hover {
   background: #eaf4d8;
+}
+
+/* ---------- Progresso da meta de premiação ---------- */
+.prize-progress {
+  max-width: 620px;
+  margin: 22px auto 4px;
+  text-align: left;
+}
+
+.prize-progress-head {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 9px;
+  font-size: 13px;
+  color: #456f2c;
+}
+
+.prize-progress-track {
+  width: 100%;
+  height: 12px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #e4ecd8;
+  box-shadow: inset 0 1px 2px rgba(20, 33, 28, 0.08);
+}
+
+.prize-progress-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #5f8f3d, #8dbb52);
+  transition: width 0.45s ease;
 }

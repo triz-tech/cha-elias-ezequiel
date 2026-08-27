@@ -31,9 +31,9 @@ const fallbackSettings: RaffleSettings = {
   title: "Rifa do Elias & Ezequiel",
   price: 15,
   quantity: 50,
-  prize_1: 900,
-  prize_2: 400,
-  prize_3: 200,
+  prize_1: 700,
+  prize_2: 300,
+  prize_3: 100,
   updated_at: "",
   prize_percent: 20,
   display_prize: 150,
@@ -96,6 +96,40 @@ export default function App() {
 
   const [toast, setToast] = useState("");
 
+  const [countdown, setCountdown] = useState("");
+
+useEffect(() => {
+  function updateCountdown() {
+    const draw = new Date(`${settings.draw_date}T23:59:59`);
+    const now = new Date();
+    const diff = draw.getTime() - now.getTime();
+
+    if (diff <= 0) {
+      setCountdown("É hoje!");
+      return;
+    }
+
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor(
+      (diff / (1000 * 60 * 60)) % 24
+    );
+    const minutes = Math.floor(
+      (diff / (1000 * 60)) % 60
+    );
+
+    setCountdown(`${days}d ${hours}h ${minutes}m`);
+  }
+
+  updateCountdown();
+
+  const timer = setInterval(updateCountdown, 60000);
+
+  return () => clearInterval(timer);
+}, [settings.draw_date]);
+
+
+  const [publicPaidAmount, setPublicPaidAmount] = useState(0);
+
   const [consultCode, setConsultCode] = useState("");
 
   const [consultResults, setConsultResults] =
@@ -130,6 +164,21 @@ async function loadPublic() {
     console.log("CONFIGURAÇÕES CARREGADAS:", data);
 
     setSettings(data as RaffleSettings);
+  }
+
+  // O público recebe apenas o total confirmado, sem acessar a lista de reservas.
+  const { data: progressData, error: progressError } = await client.rpc(
+    "get_raffle_progress"
+  );
+
+  if (progressError) {
+    console.error("Erro ao carregar progresso da premiação:", progressError);
+  } else {
+    const paid = Array.isArray(progressData)
+      ? progressData[0]?.paid_amount
+      : progressData?.paid_amount ?? progressData;
+
+    setPublicPaidAmount(Number(paid ?? 0));
   }
 }
 
@@ -239,6 +288,16 @@ setConsultResults(data as ConsultResult[]);
     };
   }, []);
 
+  const publicPrizeGoal =
+    Number(settings.prize_1) +
+    Number(settings.prize_2) +
+    Number(settings.prize_3);
+  const publicPrizeFund = Math.min(publicPaidAmount * 0.3, publicPrizeGoal);
+  const publicPrizeProgress =
+    publicPrizeGoal > 0
+      ? Math.min(100, Math.round((publicPrizeFund / publicPrizeGoal) * 100))
+      : 0;
+
   if (showAdmin) {
     return (
 <AdminPage
@@ -305,12 +364,19 @@ setConsultResults(data as ConsultResult[]);
                 <ArrowRight size={18} />
               </a>
             </div>
-              <div className="hero-draw-date">
-    <span>Sorteio</span>
-    <strong>{dateBR(settings.draw_date)}</strong>
-  </div>
 
-            
+
+<div className="hero-draw-date">
+  <span>Sorteio</span>
+
+  <div className="draw-date-row">
+    <strong>{dateBR(settings.draw_date)}</strong>
+
+    <span className="draw-countdown">
+      🕐 {countdown}
+    </span>
+  </div>
+</div>
 
             <div className="trust">
               <ShieldCheck size={18} />
@@ -332,9 +398,21 @@ setConsultResults(data as ConsultResult[]);
         </section>
 
         <section className="prizes-public">
-          <span className="eyebrow">Prêmios do sorteio</span>
-          
-          <h2>Três chances de ganhar.</h2>
+          <span className="eyebrow">Meta de premiação</span>
+
+          <h2>Queremos chegar a {money(publicPrizeGoal)} em prêmios.</h2>
+
+          <div className="prize-progress" aria-label={`${publicPrizeProgress}% da meta de premiação alcançada`}>
+            <div className="prize-progress-head">
+              <strong>{publicPrizeProgress}% da meta de premiação alcançada</strong>
+            </div>
+            <div className="prize-progress-track">
+              <div
+                className="prize-progress-fill"
+                style={{ width: `${publicPrizeProgress}%` }}
+              />
+            </div>
+          </div>
 
           <div className="prize-list">
             <div className="prize first">
@@ -352,7 +430,7 @@ setConsultResults(data as ConsultResult[]);
               <strong>{money(Number(settings.prize_3))}</strong>
             </div>
           </div>
-          <p className="prize-note"> Os valores dos prêmios podem ser ajustados de acordo com a arrecadação da rifa.</p>
+          <p className="prize-note">Os valores abaixo representam nossa meta de premiação.</p>
 
         </section>
 
@@ -1333,7 +1411,12 @@ const totalPrizes =
   Number(settings.prize_2) +
   Number(settings.prize_3);
 
-const balanceAfterPrizes = paidAmount - totalPrizes;
+const prizeFund = Math.min(paidAmount * 0.3, totalPrizes);
+const prizeProgress =
+  totalPrizes > 0
+    ? Math.min(100, Math.round((prizeFund / totalPrizes) * 100))
+    : 0;
+const remainingToPrizeGoal = Math.max(totalPrizes - prizeFund, 0);
 
 const today = new Date();
 
@@ -1407,22 +1490,16 @@ return (
             </div>
           </div>
 
-          <div className={`balance-stat ${balanceAfterPrizes >= 0 ? "positive" : "negative"}`}>
+          <div className="balance-stat positive">
   <div className="balance-icon">
     <Sparkles size={18} />
   </div>
 
   <div className="balance-content">
-    <span>
-      {balanceAfterPrizes >= 0
-        ? "Saldo após os prêmios"
-        : "Falta para cobrir os prêmios"}
-    </span>
-
-    <b>{money(Math.abs(balanceAfterPrizes))}</b>
-
+    <span>Meta de premiação</span>
+    <b>{prizeProgress}% alcançada</b>
     <small>
-      Prêmios: {money(totalPrizes)}
+      Valor atual para prêmios: {money(prizeFund)} • faltam {money(remainingToPrizeGoal)}
     </small>
   </div>
 </div>
