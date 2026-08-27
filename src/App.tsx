@@ -366,8 +366,7 @@ setConsultResults(data as ConsultResult[]);
 
           <p className="public-rifa-info">
             Você não precisa escolher um número. Ao confirmar sua
-            participação, o sistema reserva automaticamente os menores
-            números disponíveis, em ordem crescente.
+            participação, o sistema reserva automaticamente.
           </p>
         </section>
 
