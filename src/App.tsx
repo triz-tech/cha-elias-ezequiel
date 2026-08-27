@@ -397,42 +397,50 @@ setConsultResults(data as ConsultResult[]);
           </div>
         </section>
 
-        <section className="prizes-public">
-          <span className="eyebrow">Meta de premiação</span>
+       <section className="prizes-public">
+  <span className="eyebrow">Participe e</span>
 
-          <h2>Queremos chegar a {money(publicPrizeGoal)} em prêmios.</h2>
+  <h2>Concorra a 3 prêmios.</h2>
 
-          <div className="prize-progress" aria-label={`${publicPrizeProgress}% da meta de premiação alcançada`}>
-            <div className="prize-progress-head">
-              <strong>{publicPrizeProgress}% da meta de premiação alcançada</strong>
-            </div>
-            <div className="prize-progress-track">
-              <div
-                className="prize-progress-fill"
-                style={{ width: `${publicPrizeProgress}%` }}
-              />
-            </div>
-          </div>
+  <div
+    className="prize-progress"
+    aria-label={`${publicPrizeProgress}% da meta de premiação alcançada`}
+  >
+    <div className="prize-progress-head">
+      <strong>
+        {publicPrizeProgress}% da meta de premiação alcançada
+      </strong>
+    </div>
 
-          <div className="prize-list">
-            <div className="prize first">
-              <span>Meta - 1º lugar</span>
-              <strong>{money(Number(settings.prize_1))}</strong>
-            </div>
+    <div className="prize-progress-track">
+      <div
+        className="prize-progress-fill"
+        style={{ width: `${publicPrizeProgress}%` }}
+      />
+    </div>
+  </div>
 
-            <div className="prize">
-              <span>Meta - 2º lugar</span>
-              <strong>{money(Number(settings.prize_2))}</strong>
-            </div>
+  <div className="prize-list">
+    <div className="prize first">
+      <span>1º lugar</span>
+      <strong>até {money(Number(settings.prize_1))}</strong>
+    </div>
 
-            <div className="prize">
-              <span>Meta - 3º lugar</span>
-              <strong>{money(Number(settings.prize_3))}</strong>
-            </div>
-          </div>
-          <p className="prize-note">Os valores abaixo representam nossa meta de premiação.</p>
+    <div className="prize">
+      <span>2º lugar</span>
+      <strong>até {money(Number(settings.prize_2))}</strong>
+    </div>
 
-        </section>
+    <div className="prize">
+      <span>3º lugar</span>
+      <strong>até {money(Number(settings.prize_3))}</strong>
+    </div>
+  </div>
+
+  <p className="prize-note">
+    Os prêmios acompanham a arrecadação, sendo 70% do valor arrecadado destinado à chegada de Elias & Ezequiel.
+  </p>
+</section>
 
         <section className="numbers-section public-rifa-info-section">
           <div className="section-head">
