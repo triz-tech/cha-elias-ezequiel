@@ -338,17 +338,17 @@ setConsultResults(data as ConsultResult[]);
 
           <div className="prize-list">
             <div className="prize first">
-              <span>1º lugar</span>
+              <span>Meta - 1º lugar</span>
               <strong>{money(Number(settings.prize_1))}</strong>
             </div>
 
             <div className="prize">
-              <span>2º lugar</span>
+              <span>Meta - 2º lugar</span>
               <strong>{money(Number(settings.prize_2))}</strong>
             </div>
 
             <div className="prize">
-              <span>3º lugar</span>
+              <span>Meta - 3º lugar</span>
               <strong>{money(Number(settings.prize_3))}</strong>
             </div>
           </div>
