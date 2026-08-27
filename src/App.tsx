@@ -47,7 +47,7 @@ const fallbackSettings: RaffleSettings = {
     "Uma rifa feita com carinho para ajudar na chegada dos nossos gêmeos.",
 };
 
-const WHATSAPP_PAIS = "5521980069468";
+const WHATSAPP_PAIS = "5521992532358";
 
 type ConsultResult = {
   reservation_code: string;
@@ -470,7 +470,7 @@ setConsultResults(data as ConsultResult[]);
 
   <a
     className="receipt-whatsapp"
-    href={`https://wa.me/5521980069468?text=${encodeURIComponent(
+    href={`https://wa.me/${WHATSAPP_PAIS}?text=${encodeURIComponent(
       `Oi! Acabei de fazer o Pix da rifa do Elias & Ezequiel. Minha reserva é ${reservation.id
         .slice(0, 8)
         .toUpperCase()} e minha(s) cota(s): ${reservation.ticket_numbers.join(
@@ -668,16 +668,17 @@ setConsultResults(data as ConsultResult[]);
 
             <div>
               <span>Acompanhe o sorteio</span>
-              <strong>
-                {dateBR(settings.draw_date)} • {settings.instagram_1} &{" "}
-                {settings.instagram_2}
-              </strong>
+<strong>
+  {new Date(`${settings.draw_date}T12:00:00`).toLocaleDateString("pt-BR")}
+  {" • "}
+  {settings.instagram_2}
+</strong>
             </div>
           </div>
 
           <a
             href={`https://instagram.com/${cleanInstagram(
-              settings.instagram_1
+              settings.instagram_2
             )}`}
             target="_blank"
             rel="noreferrer"
