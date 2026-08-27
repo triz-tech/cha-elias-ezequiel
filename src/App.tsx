@@ -480,7 +480,7 @@ setConsultResults(data as ConsultResult[]);
     target="_blank"
     rel="noreferrer"
   >
-    Enviar comprovante no WhatsApp
+    Enviar comprovante (opcional)
   </a>
 </div>
 
