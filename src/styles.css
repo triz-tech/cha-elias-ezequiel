@@ -1083,6 +1083,8 @@ footer button {
 .admin-top > div:last-child {
   display: flex;
   gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
 }
 
 .admin-wrap {
@@ -1916,6 +1918,8 @@ footer button {
 
   .admin-top > div:last-child {
     flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-end;
     gap: 6px;
   }
 

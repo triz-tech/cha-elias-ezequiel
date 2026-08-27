@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import * as XLSX from "xlsx";
 import {
   ArrowRight,
   Baby,
@@ -144,7 +145,7 @@ async function loadPublic() {
     const code = consultCode.trim();
 
     if (!code) {
-      setConsultError("Digite o código da sua reserva.");
+      setConsultError("Digite seu telefone ou o código da reserva.");
       return;
     }
 
@@ -388,7 +389,7 @@ setConsultResults(data as ConsultResult[]);
                 <b>02</b>
                 <span>
                   <strong>Receba os números</strong>
-                  O sistema entrega automaticamente os menores
+                  O sistema sorteia automaticamente os números
                   disponíveis.
                 </span>
               </div>
@@ -1036,6 +1037,77 @@ async function drawPrize(position: number) {
     await Promise.all([loadReservations(), onRefresh()]);
   }
 
+  function exportPaidXlsx() {
+    const paidOnly = reservations.filter(
+      (reservation) => reservation.status === "paid"
+    );
+
+    if (paidOnly.length === 0) {
+      setToast("Ainda não há pagamentos confirmados para exportar.");
+      return;
+    }
+
+    type ReservationExport = Reservation & {
+      buyer_phone?: string | null;
+      created_at?: string;
+    };
+
+    const rows = paidOnly.map((reservation) => {
+      const exportReservation = reservation as ReservationExport;
+
+      return {
+        Nome: reservation.buyer_name,
+        Telefone: exportReservation.buyer_phone ?? "",
+        Relação: reservation.relationship,
+        Cotas: reservation.ticket_numbers.join(", "),
+        Quantidade: Number(reservation.quantity),
+        Valor: Number(reservation.total_amount),
+        Status: "Pago",
+        Mensagem: reservation.message ?? "",
+        Data: exportReservation.created_at
+          ? new Date(exportReservation.created_at).toLocaleString("pt-BR")
+          : "",
+      };
+    });
+
+    const worksheet = XLSX.utils.json_to_sheet(rows);
+
+    // Largura das colunas para abrir organizado no Excel.
+    worksheet["!cols"] = [
+      { wch: 28 }, // Nome
+      { wch: 18 }, // Telefone
+      { wch: 20 }, // Relação
+      { wch: 22 }, // Cotas
+      { wch: 12 }, // Quantidade
+      { wch: 14 }, // Valor
+      { wch: 12 }, // Status
+      { wch: 45 }, // Mensagem
+      { wch: 22 }, // Data
+    ];
+
+    // Formata a coluna Valor como moeda no Excel.
+    const range = XLSX.utils.decode_range(worksheet["!ref"] || "A1:I1");
+
+    for (let row = 1; row <= range.e.r; row += 1) {
+      const cell = worksheet[XLSX.utils.encode_cell({ r: row, c: 5 })];
+
+      if (cell) {
+        cell.t = "n";
+        cell.z = 'R$ #,##0.00';
+      }
+    }
+
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Pagamentos confirmados");
+
+    const fileName = `rifa-pagos-${new Date()
+      .toLocaleDateString("pt-BR")
+      .replace(/\//g, "-")}.xlsx`;
+
+    XLSX.writeFile(workbook, fileName);
+  }
+
+
   async function login(event: React.FormEvent) {
     event.preventDefault();
 
@@ -1271,6 +1343,15 @@ return (
           >
             <RefreshCw size={16} />
             Atualizar
+          </button>
+
+          <button
+            type="button"
+            className="btn ghost"
+            onClick={exportPaidXlsx}
+          >
+            <Users size={16} />
+            Exportar Excel
           </button>
 
           <button className="btn ghost" onClick={logout}>
