@@ -11,7 +11,6 @@ import {
   LockKeyhole,
   LogOut,
   MessageCircle,
-  RefreshCw,
   Settings,
   ShieldCheck,
   Sparkles,
@@ -460,12 +459,29 @@ setConsultResults(data as ConsultResult[]);
   </span>
 </div>
 
-<div className="reserved-numbers">
-  {reservation.ticket_numbers.map((number) => (
-    <b key={number}>
-      {String(number).padStart(2, "0")}
-    </b>
-  ))}
+<div className="reserved-numbers-row">
+  <div className="reserved-numbers">
+    {reservation.ticket_numbers.map((number) => (
+      <b key={number}>
+        {String(number).padStart(2, "0")}
+      </b>
+    ))}
+  </div>
+
+  <a
+    className="receipt-whatsapp"
+    href={`https://wa.me/5521980069468?text=${encodeURIComponent(
+      `Oi! Acabei de fazer o Pix da rifa do Elias & Ezequiel. Minha reserva é ${reservation.id
+        .slice(0, 8)
+        .toUpperCase()} e minha(s) cota(s): ${reservation.ticket_numbers.join(
+        ", "
+      )}. Segue o comprovante 💚`
+    )}`}
+    target="_blank"
+    rel="noreferrer"
+  >
+    Enviar comprovante no WhatsApp
+  </a>
 </div>
 
 <div className="reservation-code-box">
@@ -799,7 +815,7 @@ async function submit(event: React.FormEvent) {
         <input
           value={name}
           onChange={(event) => setName(event.target.value)}
-          placeholder="Ex.: Maria Silva"
+          placeholder="Ex.: Maria Silva ou nome do Pix"
           required
         />
       </label>
@@ -1337,13 +1353,7 @@ return (
         </div>
 
         <div>
-          <button
-            className="btn ghost"
-            onClick={() => void refreshAdmin()}
-          >
-            <RefreshCw size={16} />
-            Atualizar
-          </button>
+
 
           <button
             type="button"
@@ -1351,7 +1361,7 @@ return (
             onClick={exportPaidXlsx}
           >
             <Users size={16} />
-            Exportar Excel
+            Exportar
           </button>
 
           <button className="btn ghost" onClick={logout}>

@@ -2106,3 +2106,33 @@ footer button {
   margin-bottom: 3px;
   color: var(--ink);
 }
+
+.reserved-numbers-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.receipt-whatsapp {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 10px 14px;
+  border: 1px solid #c9d9a8;
+  border-radius: 12px;
+
+  background: #f4f9e9;
+  color: #3f6f22;
+
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+
+  transition: 0.2s ease;
+}
+
+.receipt-whatsapp:hover {
+  background: #eaf4d8;
+}
