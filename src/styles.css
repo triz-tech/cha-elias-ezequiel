@@ -1792,6 +1792,14 @@ footer button {
     font-size: 16px;
   }
 
+  .settings-form input[type="date"] {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  display: block;
+  box-sizing: border-box;
+}
+
   .qty {
     gap: 10px;
   }
