@@ -128,7 +128,7 @@ useEffect(() => {
 }, [settings.draw_date]);
 
 
-  const [publicPaidAmount, setPublicPaidAmount] = useState(0);
+  const [publicPaidTickets, setPublicPaidTickets] = useState(0);
 
   const [consultCode, setConsultCode] = useState("");
 
@@ -154,31 +154,31 @@ async function loadPublic() {
 
   if (error) {
     console.error(
-  "ERRO SUPABASE:",
-  JSON.stringify(error, null, 2)
-);
+      "ERRO SUPABASE:",
+      JSON.stringify(error, null, 2)
+    );
     return;
   }
 
   if (data) {
     console.log("CONFIGURAÇÕES CARREGADAS:", data);
-
     setSettings(data as RaffleSettings);
   }
 
-  // O público recebe apenas o total confirmado, sem acessar a lista de reservas.
-  const { data: progressData, error: progressError } = await client.rpc(
-    "get_raffle_progress"
-  );
+  const { data: progressData, error: progressError } =
+    await client.rpc("get_raffle_progress");
 
   if (progressError) {
-    console.error("Erro ao carregar progresso da premiação:", progressError);
+    console.error(
+      "Erro ao carregar progresso da rifa:",
+      progressError
+    );
   } else {
-    const paid = Array.isArray(progressData)
-      ? progressData[0]?.paid_amount
-      : progressData?.paid_amount ?? progressData;
+    const paidTickets = Array.isArray(progressData)
+      ? progressData[0]?.paid_tickets
+      : progressData?.paid_tickets;
 
-    setPublicPaidAmount(Number(paid ?? 0));
+    setPublicPaidTickets(Number(paidTickets ?? 0));
   }
 }
 
@@ -288,15 +288,15 @@ setConsultResults(data as ConsultResult[]);
     };
   }, []);
 
-  const publicPrizeGoal =
-    Number(settings.prize_1) +
-    Number(settings.prize_2) +
-    Number(settings.prize_3);
-  const publicPrizeFund = Math.min(publicPaidAmount * 0.3, publicPrizeGoal);
-  const publicPrizeProgress =
-    publicPrizeGoal > 0
-      ? Math.min(100, Math.round((publicPrizeFund / publicPrizeGoal) * 100))
-      : 0;
+const publicRaffleProgress =
+  Number(settings.quantity) > 0
+    ? Math.min(
+        100,
+        Math.round(
+          (publicPaidTickets / Number(settings.quantity)) * 100
+        )
+      )
+    : 0;
 
   if (showAdmin) {
     return (
@@ -402,23 +402,23 @@ setConsultResults(data as ConsultResult[]);
 
   <h2>Concorra a 3 prêmios.</h2>
 
-  <div
-    className="prize-progress"
-    aria-label={`${publicPrizeProgress}% da meta de premiação alcançada`}
-  >
-    <div className="prize-progress-head">
-      <strong>
-        {publicPrizeProgress}% da meta de premiação alcançada
-      </strong>
-    </div>
-
-    <div className="prize-progress-track">
-      <div
-        className="prize-progress-fill"
-        style={{ width: `${publicPrizeProgress}%` }}
-      />
-    </div>
+<div
+  className="prize-progress"
+  aria-label={`${publicRaffleProgress}% da rifa concluída`}
+>
+  <div className="prize-progress-head">
+    <strong>
+      {publicRaffleProgress}% da rifa concluída
+    </strong>
   </div>
+
+  <div className="prize-progress-track">
+    <div
+      className="prize-progress-fill"
+      style={{ width: `${publicRaffleProgress}%` }}
+    />
+  </div>
+</div>
 
   <div className="prize-list">
     <div className="prize first">
@@ -1414,17 +1414,7 @@ const paidTickets = paidReservations.reduce(
 );
 
 
-const totalPrizes =
-  Number(settings.prize_1) +
-  Number(settings.prize_2) +
-  Number(settings.prize_3);
 
-const prizeFund = Math.min(paidAmount * 0.3, totalPrizes);
-const prizeProgress =
-  totalPrizes > 0
-    ? Math.min(100, Math.round((prizeFund / totalPrizes) * 100))
-    : 0;
-const remainingToPrizeGoal = Math.max(totalPrizes - prizeFund, 0);
 
 const today = new Date();
 
@@ -1498,19 +1488,6 @@ return (
             </div>
           </div>
 
-          <div className="balance-stat positive">
-  <div className="balance-icon">
-    <Sparkles size={18} />
-  </div>
-
-  <div className="balance-content">
-    <span>Meta de premiação</span>
-    <b>{prizeProgress}% alcançada</b>
-    <small>
-      Valor atual para prêmios: {money(prizeFund)} • faltam {money(remainingToPrizeGoal)}
-    </small>
-  </div>
-</div>
 
           
         </div>
