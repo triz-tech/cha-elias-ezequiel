@@ -128,7 +128,7 @@ useEffect(() => {
 }, [settings.draw_date]);
 
 
-  const [publicPaidTickets, setPublicPaidTickets] = useState(0);
+  
 
   const [consultCode, setConsultCode] = useState("");
 
@@ -164,24 +164,7 @@ async function loadPublic() {
     console.log("CONFIGURAÇÕES CARREGADAS:", data);
     setSettings(data as RaffleSettings);
   }
-
-  const { data: progressData, error: progressError } =
-    await client.rpc("get_raffle_progress");
-
-  if (progressError) {
-    console.error(
-      "Erro ao carregar progresso da rifa:",
-      progressError
-    );
-  } else {
-    const paidTickets = Array.isArray(progressData)
-      ? progressData[0]?.paid_tickets
-      : progressData?.paid_tickets;
-
-    setPublicPaidTickets(Number(paidTickets ?? 0));
-  }
 }
-
   async function consultReservation() {
     const client = supabase;
 
@@ -288,15 +271,7 @@ setConsultResults(data as ConsultResult[]);
     };
   }, []);
 
-const publicRaffleProgress =
-  Number(settings.quantity) > 0
-    ? Math.min(
-        100,
-        Math.round(
-          (publicPaidTickets / Number(settings.quantity)) * 100
-        )
-      )
-    : 0;
+
 
   if (showAdmin) {
     return (
@@ -402,38 +377,22 @@ const publicRaffleProgress =
 
   <h2>Concorra a 3 prêmios.</h2>
 
-<div
-  className="prize-progress"
-  aria-label={`${publicRaffleProgress}% da rifa concluída`}
->
-  <div className="prize-progress-head">
-    <strong>
-      {publicRaffleProgress}% da rifa concluída
-    </strong>
-  </div>
 
-  <div className="prize-progress-track">
-    <div
-      className="prize-progress-fill"
-      style={{ width: `${publicRaffleProgress}%` }}
-    />
-  </div>
-</div>
 
   <div className="prize-list">
     <div className="prize first">
       <span>1º lugar</span>
-      <strong>até {money(Number(settings.prize_1))}</strong>
+      <strong> {money(Number(settings.prize_1))}</strong>
     </div>
 
     <div className="prize">
       <span>2º lugar</span>
-      <strong>até {money(Number(settings.prize_2))}</strong>
+      <strong> {money(Number(settings.prize_2))}</strong>
     </div>
 
     <div className="prize">
       <span>3º lugar</span>
-      <strong>até {money(Number(settings.prize_3))}</strong>
+      <strong> {money(Number(settings.prize_3))}</strong>
     </div>
   </div>
 
