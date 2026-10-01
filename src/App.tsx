@@ -586,7 +586,9 @@ async function loadPublicDrawResults() {
 
         {/* CONSULTA */}
 
-        <section className="consult-card">
+        {/* CONSULTA */}
+
+<section id="minha-reserva" className="consult-card">
           <div className="consult-header">
             <span className="eyebrow">
               Já participou?
