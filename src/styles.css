@@ -2198,3 +2198,370 @@ footer button {
   background: linear-gradient(90deg, #5f8f3d, #8dbb52);
   transition: width 0.45s ease;
 }
+
+
+/* ========================================
+   GANHADORES — PÁGINA PÚBLICA
+======================================== */
+
+.winners-public {
+  width: min(1100px, calc(100% - 48px));
+  margin: 90px auto 80px;
+}
+
+.winners-public-header {
+  max-width: 720px;
+  margin-bottom: 34px;
+}
+
+.winners-public-header .eyebrow {
+  display: inline-block;
+  margin-bottom: 12px;
+}
+
+.winners-public-header h2 {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(2.4rem, 5vw, 4rem);
+  line-height: 0.98;
+  letter-spacing: -0.04em;
+  color: #17321a;
+}
+
+.winners-public-header p {
+  margin: 16px 0 0;
+  max-width: 560px;
+  color: #687264;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.winners-public-list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.winner-public-card {
+  position: relative;
+  min-height: 280px;
+  padding: 28px;
+  border: 1px solid rgba(70, 105, 47, 0.14);
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 18px 45px rgba(54, 78, 39, 0.08);
+  overflow: hidden;
+}
+
+.winner-public-card:first-child {
+  background: linear-gradient(
+    145deg,
+    #edf8d8 0%,
+    #ffffff 72%
+  );
+  border-color: rgba(91, 137, 54, 0.2);
+}
+
+.winner-public-place {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  padding-bottom: 18px;
+  margin-bottom: 22px;
+  border-bottom: 1px solid rgba(70, 105, 47, 0.12);
+}
+
+.winner-public-place span {
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #628b3e;
+}
+
+.winner-public-prize {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #47752d;
+}
+
+.winner-public-ticket-label {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: #7b8477;
+}
+
+.winner-public-ticket {
+  display: block;
+  font-size: 3.8rem;
+  line-height: 0.95;
+  letter-spacing: -0.06em;
+  color: #29491f;
+}
+
+.winner-public-name {
+  margin-top: 24px;
+}
+
+.winner-public-name span {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 0.75rem;
+  color: #7b8477;
+}
+
+.winner-public-name strong {
+  display: block;
+  font-size: 1.18rem;
+  line-height: 1.25;
+  color: #233b1e;
+}
+
+.winner-public-date {
+  display: block;
+  margin-top: 20px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(70, 105, 47, 0.1);
+  font-size: 0.72rem;
+  color: #8a9187;
+}
+
+.winner-public-card.is-empty {
+  background: rgba(255, 255, 255, 0.55);
+  box-shadow: none;
+}
+
+.winner-public-empty {
+  margin: 35px 0 0;
+  color: #7c8578;
+  line-height: 1.5;
+}
+
+@media (max-width: 850px) {
+  .winners-public {
+    width: min(100% - 32px, 600px);
+    margin: 60px auto;
+  }
+
+  .winners-public-list {
+    grid-template-columns: 1fr;
+  }
+
+  .winner-public-card {
+    min-height: auto;
+  }
+}
+
+/* =========================================================
+   RESULTADO DO SORTEIO — ÁREA PÚBLICA
+   ========================================================= */
+
+.public-winners {
+  width: min(100% - 32px, 1100px);
+  margin: 70px auto 0;
+}
+
+.public-winners .section-head {
+  margin-bottom: 28px;
+}
+
+.public-winners .eyebrow {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #648f36;
+}
+
+.public-winners h2 {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(34px, 4vw, 52px);
+  line-height: 1;
+  color: #17311c;
+  font-weight: 500;
+}
+
+/* Estado vazio */
+
+.public-winners-empty {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 30px;
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid #dfe8d4;
+  border-radius: 24px;
+  box-shadow: 0 12px 35px rgba(48, 75, 34, 0.06);
+}
+
+.public-winners-empty svg {
+  flex: 0 0 auto;
+  color: #6a9b38;
+}
+
+.public-winners-empty strong {
+  display: block;
+  color: #17311c;
+  font-size: 16px;
+}
+
+.public-winners-empty span {
+  color: #71806f;
+  font-size: 14px;
+}
+
+/* Lista dos ganhadores */
+
+.public-winner-list {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+
+/* Card individual */
+
+.public-winner {
+  position: relative;
+  overflow: hidden;
+  padding: 26px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid #dce6d1;
+  border-radius: 24px;
+  box-shadow:
+    0 12px 35px rgba(48, 75, 34, 0.07),
+    0 2px 6px rgba(48, 75, 34, 0.03);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.public-winner:hover {
+  transform: translateY(-3px);
+  box-shadow:
+    0 18px 40px rgba(48, 75, 34, 0.1),
+    0 3px 8px rgba(48, 75, 34, 0.04);
+}
+
+/* Destaque do primeiro prêmio */
+
+.public-winner-first {
+  background:
+    linear-gradient(
+      145deg,
+      #ffffff 0%,
+      #f2f9e8 100%
+    );
+  border-color: #cbdcab;
+}
+
+/* Cabeçalho do card */
+
+.public-winner-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid #e4eadf;
+}
+
+.public-winner-top span {
+  font-size: 12px;
+  font-weight: 700;
+  color: #72806d;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.public-winner-top strong {
+  color: #4d7d25;
+  font-size: 17px;
+}
+
+/* Número sorteado */
+
+.public-winner-number {
+  padding: 26px 0 20px;
+  text-align: center;
+}
+
+.public-winner-number span {
+  display: block;
+  margin-bottom: 8px;
+  color: #7a8776;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.public-winner-number strong {
+  display: block;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 58px;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: #17311c;
+}
+
+/* Data */
+
+.public-winner small {
+  display: block;
+  padding-top: 15px;
+  border-top: 1px solid #e7ece3;
+  color: #8a9486;
+  font-size: 11px;
+  text-align: center;
+}
+
+/* Resultado ainda não publicado */
+
+.public-winner-pending {
+  min-height: 130px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.public-winner-pending span {
+  color: #7d8979;
+  font-size: 14px;
+}
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 800px) {
+  .public-winners {
+    width: min(100% - 24px, 600px);
+    margin-top: 52px;
+  }
+
+  .public-winners h2 {
+    font-size: 36px;
+  }
+
+  .public-winner-list {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .public-winner {
+    padding: 22px;
+  }
+
+  .public-winner-number {
+    padding: 22px 0 18px;
+  }
+
+  .public-winner-number strong {
+    font-size: 52px;
+  }
+}
