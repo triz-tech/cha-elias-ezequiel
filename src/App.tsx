@@ -281,7 +281,22 @@ async function loadPublicDrawResults() {
       listener.subscription.unsubscribe();
     };
   }, []);
+  
 
+useEffect(() => {
+  if (window.location.hash === "#minha-reserva") {
+    setTimeout(() => {
+      document
+        .getElementById("minha-reserva")
+        ?.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+    }, 300);
+  }
+}, []);
+
+  
   /*
    * Atualização em tempo real.
    */
@@ -586,9 +601,7 @@ async function loadPublicDrawResults() {
 
         {/* CONSULTA */}
 
-        {/* CONSULTA */}
-
-<section id="minha-reserva" className="consult-card">
+        <section id="minha-reserva" className="consult-card">
           <div className="consult-header">
             <span className="eyebrow">
               Já participou?
