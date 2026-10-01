@@ -1078,18 +1078,31 @@ async function drawPrize(position: number) {
 
   setDrawingPrize(position);
 
-  const { error } = await client.rpc("draw_prize", {
+  const { data, error } = await client.rpc("draw_prize", {
     p_prize_position: position,
   });
 
   setDrawingPrize(null);
 
   if (error) {
+    console.error("Erro ao realizar sorteio:", error);
     setToast(error.message);
     return;
   }
 
-  await loadDrawResults();
+  if (data) {
+    const result = data as DrawResult;
+
+    setDrawResults((current) => {
+      const withoutCurrentPrize = current.filter(
+        (item) => item.prize_position !== position
+      );
+
+      return [...withoutCurrentPrize, result].sort(
+        (a, b) => a.prize_position - b.prize_position
+      );
+    });
+  }
 
   setToast(`${position}º prêmio sorteado!`);
 }
